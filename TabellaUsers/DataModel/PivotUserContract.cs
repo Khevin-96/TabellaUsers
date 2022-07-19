@@ -10,6 +10,8 @@ namespace TabellaUsers.DataModel
     //ed avvi la migration
     public class PivotUserContract
     {
+        [Key]
+        public int id { get; set; }
         public ModelUsers user { get; set; }
         public int User_id { get; set; }
         public ModelContract contract { get; set; }

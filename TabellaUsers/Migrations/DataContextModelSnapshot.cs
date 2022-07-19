@@ -93,18 +93,26 @@ namespace TabellaUsers.Migrations
 
             modelBuilder.Entity("TabellaUsers.DataModel.PivotUserContract", b =>
                 {
-                    b.Property<int>("User_id")
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"), 1L, 1);
+
                     b.Property<int>("Contract_id")
+                        .HasColumnType("int");
+
+                    b.Property<int>("User_id")
                         .HasColumnType("int");
 
                     b.Property<bool>("isDeleted")
                         .HasColumnType("bit");
 
-                    b.HasKey("User_id", "Contract_id");
+                    b.HasKey("id");
 
                     b.HasIndex("Contract_id");
+
+                    b.HasIndex("User_id");
 
                     b.ToTable("ContractUsersPivot");
                 });

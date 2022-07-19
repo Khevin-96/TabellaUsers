@@ -33,6 +33,13 @@ namespace TabellaUsers.Repository
                 return null;
             }
             var modelAzienda = await _context.Azienda.FindAsync(id);
+            var modelUser = await _context.Users.Where(u => u.Azienda_Id == id).ToListAsync();
+            foreach(var user in modelUser)
+            {
+                user.Azienda_Id = null;
+                _context.Users.Update(user);
+                await _context.SaveChangesAsync();
+            }
             if (modelAzienda == null)
             {
                 return null;

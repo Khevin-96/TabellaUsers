@@ -42,7 +42,7 @@ namespace TabellaUsers.DataModel
             modelBuilder.Entity<ModelContract>()
             .HasQueryFilter(contract => EF.Property<bool>(contract, "isDeleted") == false);
 
-            modelBuilder.Entity<PivotUserContract>().HasKey(t => new { t.User_id, t.Contract_id });
+            //modelBuilder.Entity<PivotUserContract>().HasKey(t => new { t.User_id, t.Contract_id });
 
             modelBuilder.Entity<PivotUserContract>()
            .HasOne(x => x.user)
