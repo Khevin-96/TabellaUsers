@@ -14,5 +14,6 @@ namespace TabellaUsers.DataModel
         public int User_id { get; set; }
         public ModelContract contract { get; set; }
         public int Contract_id { get; set; }
+
     }
 }

@@ -42,7 +42,6 @@ namespace TabellaUsers.DataModel
             modelBuilder.Entity<ModelContract>()
             .HasQueryFilter(contract => EF.Property<bool>(contract, "isDeleted") == false);
 
-            //modelBuilder.Entity<PivotUserContract>().HasNoKey();
             modelBuilder.Entity<PivotUserContract>().HasKey(t => new { t.User_id, t.Contract_id });
 
             modelBuilder.Entity<PivotUserContract>()
@@ -57,10 +56,10 @@ namespace TabellaUsers.DataModel
 
 
             modelBuilder.Entity<PivotUserContract>()
-            .Property<bool>("isdeleted");
+            .Property<bool>("isDeleted");
 
             modelBuilder.Entity<PivotUserContract>()
-            .HasQueryFilter(contractuser => EF.Property<bool>(contractuser, "isdeleted") == false);
+            .HasQueryFilter(contractuser => EF.Property<bool>(contractuser, "isDeleted") == false);
 
         }
 
@@ -79,23 +78,47 @@ namespace TabellaUsers.DataModel
 
         private void OnBeforeSaving()
         {
-            
-            foreach (var entry in ChangeTracker.Entries<ModelUsers>())
-            {
-                switch (entry.State)
-                {
-                    case EntityState.Added:
-                        entry.CurrentValues["isDeleted"] = false;
-                       
-                        break;
 
-                    case EntityState.Deleted:
-                        entry.State = EntityState.Modified;
-                        entry.CurrentValues["isDeleted"] = true;
-                        
-                        break;
+            foreach (var item in ChangeTracker.Entries<PivotUserContract>())
+            {
+                foreach (var entry in ChangeTracker.Entries<ModelUsers>())
+                {
+                    switch (entry.State)
+                    {
+                        case EntityState.Added:
+                            entry.CurrentValues["isDeleted"] = false;
+                            item.CurrentValues["isDeleted"] = false;
+                            break;
+
+                        case EntityState.Deleted:
+                            entry.State = EntityState.Modified;
+                            entry.CurrentValues["isDeleted"] = true;
+                            item.State=EntityState.Modified;
+                            item.CurrentValues["isDeleted"] = true;
+                            break;
+                    }
                 }
+
+                foreach (var entryss in ChangeTracker.Entries<ModelContract>())
+                {
+
+                    switch (entryss.State)
+                    {
+                        case EntityState.Added:
+                            entryss.CurrentValues["isDeleted"] = false;
+                            item.CurrentValues["isDeleted"] = false;
+                            break;
+
+                        case EntityState.Deleted:
+                            entryss.State = EntityState.Modified;
+                            entryss.CurrentValues["isDeleted"] = true;
+                            item.CurrentValues["isDeleted"] = true;
+                            break;
+                    }
+                }
+
             }
+
 
             foreach (var entrys in ChangeTracker.Entries<ModelAzienda>())
             {
@@ -112,24 +135,27 @@ namespace TabellaUsers.DataModel
                 }
             }
 
-            foreach (var entryss in ChangeTracker.Entries<ModelContract>())
-            {
-               
-                switch (entryss.State)
-                {
-                    case EntityState.Added:
-                        entryss.CurrentValues["isDeleted"] = false;
-                        
-                        break;
 
-                    case EntityState.Deleted:
-                        entryss.State = EntityState.Modified;
-                        entryss.CurrentValues["isDeleted"] = true;
-                       
-                        break;
-                }
-            }
+            //foreach (var item2 in ChangeTracker.Entries<PivotUserContract>())
+            //{
+            //    foreach (var entryss in ChangeTracker.Entries<ModelContract>())
+            //    {
 
+            //        switch (entryss.State)
+            //        {
+            //            case EntityState.Added:
+            //                entryss.CurrentValues["isDeleted"] = false;
+            //                item2.CurrentValues["isDeleted"] = false;
+            //                break;
+
+            //            case EntityState.Deleted:
+            //                entryss.State = EntityState.Modified;
+            //                entryss.CurrentValues["isDeleted"] = true;
+            //                item2.CurrentValues["isDeleted"] = true;
+            //                break;
+            //        }
+            //    }
+            //}
 
         }
     }

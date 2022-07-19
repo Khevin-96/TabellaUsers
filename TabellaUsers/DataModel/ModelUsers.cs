@@ -13,12 +13,13 @@ namespace TabellaUsers.DataModel
 
         public int? Azienda_Id { get; set; }
      
+        // faccio il collegamento con ModelAzienda
         public virtual ModelAzienda? Azienda { get; set; }
 
 
         //Definisco la variabile foreignKey di Contact_Id su ModelContract 
-
-        public ICollection<PivotUserContract> Contracts { get; set; }
+        
+        public ICollection<PivotUserContract>? Contracts { get; set; }
 
     }
 }

@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TabellaUsers.DataModel;
+using TabellaUsers.Interface;
+using TabellaUsers.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +16,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddControllers().AddNewtonsoftJson(x => x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 builder.Services.AddControllers().AddNewtonsoftJson(x => x.SerializerSettings.PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.None);
 
+
+builder.Services.AddScoped<IUser, UserRepo>();
+builder.Services.AddScoped<IAzienda, AziendaRepo>();
+builder.Services.AddScoped<IContract, ContractRepo>();
 
 builder.Services.AddDbContext<DataContext>(options =>
 {

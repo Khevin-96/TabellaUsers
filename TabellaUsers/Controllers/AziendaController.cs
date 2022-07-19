@@ -1,8 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 using TabellaUsers.DataModel;
+using TabellaUsers.Interface;
 
 namespace TabellaUsers.Controllers
 {
@@ -10,117 +14,57 @@ namespace TabellaUsers.Controllers
     [ApiController]
     public class AziendaController : ControllerBase
     {
-        private readonly DataContext _context;
+        private readonly IAzienda _azienda;
 
-        public AziendaController(DataContext context)
+        public AziendaController(IAzienda azienda)
         {
-            _context = context;
+            _azienda = azienda;
         }
 
-        public Expression<Func<ModelAzienda, object>> Users { get; private set; }
-
+        // GET: api/ModelUsers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ModelAzienda>>> GetAzienda()
         {
-            if (_context.Azienda == null)
-            {
-                return NotFound();
-            }
-            return await _context.Azienda.Include(a=>a.Users).ToListAsync();
+            var azienda = await _azienda.GetAllAziendaAsync();
+
+            return Ok(azienda);
         }
 
-
+        // GET: api/ModelUsers/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<List<ModelAzienda>>> GetModelAzienda(int id)
+        public async Task<ActionResult<ModelAzienda>> GetModelAzienda(int id)
         {
-            if (_context.Azienda == null)
-            {
-                return NotFound();
-            }
+            var azienda = await _azienda.GetAzienda_ID_Async(id);
 
-            // var modelAzienda = await _context.Azienda.FindAsync(id);
-             var modelAzienda = await _context.Azienda.Include(a => a.Users.Where(b=>b.Azienda_Id==id)).ToListAsync();
-
-           // var modelAzienda = await _context.Azienda.Include(a => a.Users).FirstAsync(id);
-            if (modelAzienda == null)
-            {
-                return NotFound();
-            }
-
-            return modelAzienda;
+            return Ok(azienda);
         }
 
-
+        // PUT: api/ModelUsers/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutModelAzienda(int id, ModelAzienda modelAzienda)
         {
-            if (id!=modelAzienda.IdAzienda)
-            {
-                return BadRequest();
-            }
+            var Azienda = await _azienda.UpdateAziendaAsync(id, modelAzienda);
 
-            _context.Entry(modelAzienda).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ModelAziendaExist(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-               
-            }
-
-            return NoContent();
+            return Ok(Azienda);
         }
 
 
-
+        // POST: api/ModelUsers
         [HttpPost]
-        public async Task<ActionResult<ModelAzienda>> PostModelAzienda(ModelAzienda modelazienda)
+        public async Task<ActionResult<ModelAzienda>> PostModelAzienda(ModelAzienda modelAzienda)
         {
-            
-            if (_context.Azienda == null)
-            {
-                return Problem("Entity set 'DataContext.Azienda'  is null.");
-            }
-            _context.Azienda.Add(modelazienda);
-            await _context.SaveChangesAsync();
+            var Azienda = await _azienda.CreateAziendaAsync(modelAzienda);
 
-            return CreatedAtAction("GetModelAzienda", new { id = modelazienda.IdAzienda }, modelazienda);
+            return Ok(Azienda);
         }
 
-
-        [HttpDelete("id")]
+        // DELETE: api/ModelUsers/5
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteModelAzienda(int id)
         {
-            if (_context.Azienda == null)
-            {
-                return NotFound();
-            }
+            var Azienda = await _azienda.DeleteAziendaAsync(id);
 
-            var modelAzienda = await _context.Azienda.FindAsync(id);
-            if (modelAzienda==null)
-            {
-                return NotFound();
-            }
-            _context.Azienda.Remove(modelAzienda);
-            await _context.SaveChangesAsync();
-            return NoContent();
-        }
-
-
-
-        private bool ModelAziendaExist(int id)
-        {
-            return (_context.Azienda?.Any(a => a.IdAzienda == id)).GetValueOrDefault();
+            return Ok(Azienda);
         }
     }
 }

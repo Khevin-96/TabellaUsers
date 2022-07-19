@@ -17,7 +17,7 @@ namespace TabellaUsers.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.6")
+                .HasAnnotation("ProductVersion", "6.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
@@ -99,7 +99,7 @@ namespace TabellaUsers.Migrations
                     b.Property<int>("Contract_id")
                         .HasColumnType("int");
 
-                    b.Property<bool>("isdeleted")
+                    b.Property<bool>("isDeleted")
                         .HasColumnType("bit");
 
                     b.HasKey("User_id", "Contract_id");
