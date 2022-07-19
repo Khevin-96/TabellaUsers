@@ -20,6 +20,7 @@ builder.Services.AddControllers().AddNewtonsoftJson(x => x.SerializerSettings.Pr
 builder.Services.AddScoped<IUser, UserRepo>();
 builder.Services.AddScoped<IAzienda, AziendaRepo>();
 builder.Services.AddScoped<IContract, ContractRepo>();
+builder.Services.AddScoped<IPivot, PivotRepo>();
 
 builder.Services.AddDbContext<DataContext>(options =>
 {

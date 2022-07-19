@@ -12,9 +12,9 @@ namespace TabellaUsers.DataModel
     {
         [Key]
         public int id { get; set; }
-        public ModelUsers user { get; set; }
+        public ModelUsers? user { get; set; }
         public int User_id { get; set; }
-        public ModelContract contract { get; set; }
+        public ModelContract? contract { get; set; }
         public int Contract_id { get; set; }
 
     }
