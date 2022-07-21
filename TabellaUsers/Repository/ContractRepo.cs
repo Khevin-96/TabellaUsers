@@ -84,6 +84,7 @@ namespace TabellaUsers.Repository
 
             try
             {
+                _context.Contratto.Update(modelContract);
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)

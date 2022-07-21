@@ -81,49 +81,70 @@ namespace TabellaUsers.DataModel
 
             foreach (var item in ChangeTracker.Entries<ModelUsers>())
             {
-                foreach (var entry in ChangeTracker.Entries<PivotUserContract>())
+                if (item.State == EntityState.Added)
                 {
-                    switch (entry.State)
-                    {
-                        case EntityState.Added:
-                            entry.CurrentValues["isDeleted"] = false;
-                            item.CurrentValues["isDeleted"] = false;
-                            break;
+                    item.CurrentValues["isDeleted"] = false;
+                }
+                else if (item.State == EntityState.Deleted)
+                {
+                    item.State = EntityState.Modified;
 
-                        case EntityState.Deleted:
-                            entry.State = EntityState.Modified;
-                            entry.CurrentValues["isDeleted"] = true;
-                            item.State=EntityState.Modified;
-                            item.CurrentValues["isDeleted"] = true;
-                            break;
-                    }
+                    item.CurrentValues["isDeleted"] = true;
                 }
 
-                
+                foreach (var entry in ChangeTracker.Entries<PivotUserContract>())
+                {
+                    if (entry.State == EntityState.Added || item.State == EntityState.Added)
+                    {
+                        entry.State = EntityState.Modified;
+                        entry.CurrentValues["isDeleted"] = false;
+                    }
+                    else if (entry.State == EntityState.Deleted || item.State == EntityState.Deleted)
 
+                    {
+                        entry.State = EntityState.Modified;
+                        entry.CurrentValues["isDeleted"] = true;
+                    }
+
+                }
             }
+
+
+
             foreach (var item in ChangeTracker.Entries<ModelContract>())
             {
+                if (item.State == EntityState.Added)
+                {
+                    item.CurrentValues["isDeleted"] = false;
+                }
+                else if (item.State == EntityState.Deleted)
+                {
+                    item.State = EntityState.Modified;
 
+                    item.CurrentValues["isDeleted"] = true;
+                }
+               
                 foreach (var entry in ChangeTracker.Entries<PivotUserContract>())
                 {
-                    switch (entry.State)
+                    if (entry.State == EntityState.Added || item.State == EntityState.Added)
                     {
-                        case EntityState.Added:
-                            entry.CurrentValues["isDeleted"] = false;
-                            item.CurrentValues["isDeleted"] = false;
-                            break;
 
-                        case EntityState.Deleted:
-                            entry.State = EntityState.Modified;
-                            entry.CurrentValues["isDeleted"] = true;
-                            item.State = EntityState.Modified;
-                            item.CurrentValues["isDeleted"] = true;
-                            break;
+                        entry.CurrentValues["isDeleted"] = false;
+
                     }
+                    else if (entry.State == EntityState.Deleted || item.State == EntityState.Deleted)
+
+                    {
+                        entry.State = EntityState.Modified;
+
+                        entry.CurrentValues["isDeleted"] = true;
+                    }
+                    
                 }
 
             }
+
+
 
             foreach (var entrys in ChangeTracker.Entries<ModelAzienda>())
             {

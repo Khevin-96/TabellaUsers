@@ -8,6 +8,7 @@ namespace TabellaUsers.DataModel
         [Key]
         public int IdContract { get; set; }
         public string NameContract { get; set; }
+        
         public ICollection<PivotUserContract>? Users { get; set; }
     }
 }

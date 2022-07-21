@@ -1,14 +1,16 @@
 ﻿
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+using CoreApiResponse;
 using TabellaUsers.DataModel;
 using TabellaUsers.Interface;
+using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace TabellaUsers.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class UserController : BaseController
     {
         private readonly IUser _user;
 
@@ -19,48 +21,116 @@ namespace TabellaUsers.Controllers
 
         // GET: api/ModelUsers
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ModelUsers>>> GetUsers()
+        public async Task<IActionResult> GetUsers()
         {
-            var users = await _user.GetAllUsersAsync();
+            try
+            {
+                var users = await _user.GetAllUsersAsync();
+                if (users==null)
+                {
+                    return CustomResult("Utenti non trovati", HttpStatusCode.NotFound);
+                }
+                return CustomResult("Utenti Caricati", users);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
 
-            return Ok(users);
+        
         }
 
         // GET: api/ModelUsers/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ModelUsers>> GetModelUsers(int id)
+        public async Task<IActionResult> GetModelUsers(int id)
         {
-            var users = await _user.GetUsers_ID_Async(id);
+            try
+            {
+                var users = await _user.GetUsers_ID_Async(id);
+                if (users==null)
+                {
+                    return CustomResult("Utente non trovato", HttpStatusCode.NotFound);
+                }
+                
+                return CustomResult("Utente Trovato", users);
+            }
+            catch (Exception ex)
+            {
 
-            return Ok(users);
+                return BadRequest(ex.Message);
+            }
+
         }
 
         // PUT: api/ModelUsers/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutModelUsers(int id, ModelUsers modelUsers)
         {
-            var user = await _user.UpdateUsersAsync(id, modelUsers);
 
-            return Ok(user);
+            try
+            {
+                var users = await _user.UpdateUsersAsync(id,modelUsers);
+                if (users == null)
+                {
+                    return CustomResult("Modifica fallita, l'ID è errato", HttpStatusCode.NotFound);
+                }
+
+                return CustomResult("Utente Modificato", users);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+
         }
 
 
         // POST: api/ModelUsers
         [HttpPost]
-        public async Task<ActionResult<ModelUsers>> PostModelUsers(ModelUsers modelUsers)
+        public async Task<IActionResult> PostModelUsers(ModelUsers modelUsers)
         {
-            var user= await _user.CreateUsersAsync(modelUsers);
+            try
+            {
+                var users = await _user.CreateUsersAsync(modelUsers);
+                if (users == null)
+                {
+                    return CustomResult("Creazione Fallita", HttpStatusCode.NotFound);
+                }
 
-            return Ok(user);
+                return CustomResult("Creazione Utente Effettuata", users);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
         }
 
         // DELETE: api/ModelUsers/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteModelUsers(int id)
         {
-            var user= await _user.DeleteUsersAsync(id);
+            try
+            {
+                var user= await _user.GetAllUsersAsync();
+                if (user==null)
+                {
+                    return CustomResult("Lista Utenti vuota", user);
+                }
+                var users = await _user.DeleteUsersAsync(id);
+                if (users == null)
+                {
+                    return CustomResult("Eliminazione Fallita, ID non trovato", HttpStatusCode.NotFound);
+                }
 
-            return Ok(user);
+                return CustomResult("Eliminazione Utente Effettuata", users);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
         }
 
     }

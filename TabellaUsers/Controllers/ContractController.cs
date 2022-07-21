@@ -2,12 +2,14 @@
 using Microsoft.AspNetCore.Mvc;
 using TabellaUsers.DataModel;
 using TabellaUsers.Interface;
+using CoreApiResponse;
+using System.Net;
 
 namespace TabellaUsers.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ContractController : ControllerBase
+    public class ContractController : BaseController
     {
         private readonly IContract _contract;
         public ContractController(IContract contract)
@@ -16,48 +18,111 @@ namespace TabellaUsers.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ModelContract>>> GetContract()
+        public async Task<IActionResult> GetContract()
         {
-            var contract = await _contract.GetAllContractAsync();
-
-            return Ok(contract);
+            try
+            {
+                var contratto = await _contract.GetAllContractAsync();
+                if (contratto == null)
+                {
+                    return CustomResult("Contratti non trovati", HttpStatusCode.NotFound);
+                }
+                return CustomResult("Contratti Caricati", contratto);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // GET: api/ModelUsers/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ModelContract>> GetModelContract(int id)
+        public async Task<IActionResult> GetModelContract(int id)
         {
-            var contract = await _contract.GetContract_ID_Async(id);
+            try
+            {
+                var contratto = await _contract.GetContract_ID_Async(id);
+                if (contratto == null)
+                {
+                    return CustomResult("Contratto non trovato", HttpStatusCode.NotFound);
+                }
 
-            return Ok(contract);
+                return CustomResult("Contratto Trovato", contratto);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
         }
 
         // PUT: api/ModelUsers/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutModelContract(int id, ModelContract modelContract)
         {
-            var contract = await _contract.UpdateContractAsync(id, modelContract);
+            try
+            {
+                var contratto = await _contract.UpdateContractAsync(id, modelContract);
+                if (contratto == null)
+                {
+                    return CustomResult("Modifica fallita, l'ID è errato", HttpStatusCode.NotFound);
+                }
 
-            return Ok(contract);
+                return CustomResult("Contratto Modificato", contratto);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
         }
 
 
         // POST: api/ModelUsers
         [HttpPost]
-        public async Task<ActionResult<ModelContract>> PostModelContract(ModelContract modelContract)
+        public async Task<IActionResult> PostModelContract(ModelContract modelContract)
         {
-            var contract = await _contract.CreateContractAsync(modelContract);
+            try
+            {
+                var contratto = await _contract.CreateContractAsync(modelContract);
+                if (contratto == null)
+                {
+                    return CustomResult("Creazione Fallita", HttpStatusCode.NotFound);
+                }
 
-            return Ok(contract);
+                return CustomResult("Creazione Contratto Effettuata", contratto);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
         }
 
         // DELETE: api/ModelUsers/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteModelContract(int id)
         {
-            var contract = await _contract.DeleteContractAsync(id);
+            try
+            {
+                var contratti = await _contract.GetAllContractAsync();
+                if (contratti == null)
+                {
+                    return CustomResult("Lista Contratti vuota", contratti);
+                }
+                var contratto = await _contract.DeleteContractAsync(id);
+                if (contratto == null)
+                {
+                    return CustomResult("Eliminazione Fallita, ID non trovato", HttpStatusCode.NotFound);
+                }
 
-            return Ok(contract);
+                return CustomResult("Eliminazione Contratto Effettuata", contratto);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

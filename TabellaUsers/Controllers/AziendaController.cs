@@ -7,12 +7,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TabellaUsers.DataModel;
 using TabellaUsers.Interface;
+using CoreApiResponse;
+using System.Net;
 
 namespace TabellaUsers.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AziendaController : ControllerBase
+    public class AziendaController : BaseController
     {
         private readonly IAzienda _azienda;
 
@@ -23,48 +25,112 @@ namespace TabellaUsers.Controllers
 
         // GET: api/ModelUsers
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ModelAzienda>>> GetAzienda()
+        public async Task<IActionResult> GetAzienda()
         {
-            var azienda = await _azienda.GetAllAziendaAsync();
-
-            return Ok(azienda);
+            try
+            {
+                var azienda = await _azienda.GetAllAziendaAsync();
+                if (azienda == null)
+                {
+                    return CustomResult("Aziende non trovate", HttpStatusCode.NotFound);
+                }
+                return CustomResult("Aziende Caricate", azienda);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // GET: api/ModelUsers/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ModelAzienda>> GetModelAzienda(int id)
+        public async Task<IActionResult> GetModelAzienda(int id)
         {
-            var azienda = await _azienda.GetAzienda_ID_Async(id);
+            try
+            {
+                var azienda = await _azienda.GetAzienda_ID_Async(id);
+                if (azienda == null)
+                {
+                    return CustomResult("Azienda non trovata", HttpStatusCode.NotFound);
+                }
 
-            return Ok(azienda);
+                return CustomResult("Azienda Trovata", azienda);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
         }
 
         // PUT: api/ModelUsers/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutModelAzienda(int id, ModelAzienda modelAzienda)
         {
-            var Azienda = await _azienda.UpdateAziendaAsync(id, modelAzienda);
 
-            return Ok(Azienda);
+            try
+            {
+                var azienda = await _azienda.UpdateAziendaAsync(id, modelAzienda);
+                if (azienda == null)
+                {
+                    return CustomResult("Modifica fallita, l'ID è errato", HttpStatusCode.NotFound);
+                }
+
+                return CustomResult("Azienda Modificata", azienda);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
         }
 
 
         // POST: api/ModelUsers
         [HttpPost]
-        public async Task<ActionResult<ModelAzienda>> PostModelAzienda(ModelAzienda modelAzienda)
+        public async Task<IActionResult> PostModelAzienda(ModelAzienda modelAzienda)
         {
-            var Azienda = await _azienda.CreateAziendaAsync(modelAzienda);
+            try
+            {
+                var azienda = await _azienda.CreateAziendaAsync(modelAzienda);
+                if (azienda == null)
+                {
+                    return CustomResult("Creazione Azienda Fallita", HttpStatusCode.NotFound);
+                }
 
-            return Ok(Azienda);
+                return CustomResult("Creazione Azienda Effettuata", azienda);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
         }
 
         // DELETE: api/ModelUsers/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteModelAzienda(int id)
         {
-            var Azienda = await _azienda.DeleteAziendaAsync(id);
+            try
+            {
+                var aziende = await _azienda.GetAllAziendaAsync();
+                if (aziende == null)
+                {
+                    return CustomResult("Lista Aziende vuota", aziende);
+                }
+                var azienda = await _azienda.DeleteAziendaAsync(id);
+                if (azienda == null)
+                {
+                    return CustomResult("Eliminazione Fallita, ID non trovato o Azienda già eliminata", HttpStatusCode.NotFound);
+                }
 
-            return Ok(Azienda);
+                return CustomResult("Eliminazione Azienda Effettuata", azienda);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

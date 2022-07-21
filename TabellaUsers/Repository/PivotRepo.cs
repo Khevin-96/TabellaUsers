@@ -17,7 +17,7 @@ namespace TabellaUsers.Repository
         }
         public async Task<PivotUserContract> CreatePivotData(PivotUserContract pivotUserContract)
         {
-            if (_context.ContractUsersPivot == null)
+            if (pivotUserContract.User_id==null && pivotUserContract.Contract_id==null)
             {
                 return null;
             }
@@ -27,7 +27,7 @@ namespace TabellaUsers.Repository
             return pivotUserContract;
         }
 
-        public async Task<HttpResponseMessage> DeletePivotData(int userID, int contractID)
+        public async Task<PivotUserContract> DeletePivotData(int userID, int contractID)
         {
             if (_context.ContractUsersPivot == null)
             {
@@ -39,11 +39,11 @@ namespace TabellaUsers.Repository
                 throw new HttpResponseException(HttpStatusCode.BadRequest);
             }
             _context.ContractUsersPivot.Remove(modelPivot);
-            await _context.SaveChangesAsync();
-            HttpResponseMessage response = new HttpResponseMessage();
-            response.StatusCode = HttpStatusCode.Accepted;
-            response.Content = new StringContent("Cancellazione effettuata", Encoding.Unicode);
-            return response;
+            await _context.SaveChangesAsync();   
+            //HttpResponseMessage response = new HttpResponseMessage();
+            //response.StatusCode = HttpStatusCode.Accepted;
+            //response.Content = new StringContent("Cancellazione effettuata", Encoding.Unicode);
+            return modelPivot;
 
         }
 
@@ -65,5 +65,7 @@ namespace TabellaUsers.Repository
             }
             return await _context.ContractUsersPivot.Where(up => up.User_id == userID && up.Contract_id == contractID).Include(u => u.user).Include(u => u.contract).FirstOrDefaultAsync();
         }
+
+
     }
 }

@@ -5,7 +5,7 @@ namespace TabellaUsers.Interface
     public interface IUser
     {
         Task<List<ModelUsers>> GetAllUsersAsync();
-        Task<List<ModelUsers>> GetUsers_ID_Async(int id);
+        Task<ModelUsers> GetUsers_ID_Async(int id);
 
         Task<ModelUsers> CreateUsersAsync(ModelUsers user);
 

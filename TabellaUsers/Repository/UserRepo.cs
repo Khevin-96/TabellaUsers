@@ -17,7 +17,7 @@ namespace TabellaUsers.Repository
 
         public async Task<ModelUsers> CreateUsersAsync(ModelUsers user)
         {
-            if (_context.Users == null)
+            if (user.Name==null && user.SurName==null)
             {
                 return null;
             }
@@ -43,7 +43,6 @@ namespace TabellaUsers.Repository
 
             _context.Users.Remove(modelUsers);
             
-            
             await _context.SaveChangesAsync();
 
             return modelUsers;
@@ -59,46 +58,42 @@ namespace TabellaUsers.Repository
             return await _context.Users.Include(a => a.Contracts).ThenInclude(c => c.contract).Include(b => b.Azienda).ToListAsync();
         }
 
-        public async Task<List<ModelUsers>> GetUsers_ID_Async(int id)
+        public async Task<ModelUsers>? GetUsers_ID_Async(int id)
         {
             if (_context.Users == null)
             {
                 return null;
             }
-            var modelUsers = await _context.Users.Include(a => a.Azienda).Include(c => c.Contracts).ThenInclude(c => c.contract).Where(c=>c.UserId == id).ToListAsync();
-
-            if (modelUsers == null)
-            {
-                return null;
-            }
+            var modelUsers = await _context.Users.Include(a => a.Azienda).Include(c => c.Contracts).ThenInclude(c => c.contract).Where(c=>c.UserId == id).FirstOrDefaultAsync();
 
             return modelUsers;
         }
 
-        public async Task<ModelUsers> UpdateUsersAsync(int id, ModelUsers modelUsers)
+        public async Task<ModelUsers>? UpdateUsersAsync(int id, ModelUsers modelUsers)
         {
             if (id != modelUsers.UserId)
             {
                 return null;
             }
-           
+
             _context.Entry(modelUsers).State = EntityState.Modified;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ModelUsersExists(id))
+                try
                 {
-                    return null;
+                    _context.Users.Update(modelUsers);
+                    await _context.SaveChangesAsync();
                 }
-                else
+                catch (DbUpdateConcurrencyException)
                 {
-                    throw;
+                    if (!ModelUsersExists(id))
+                    {
+                        return null;
+                    }
+                    else
+                    {
+                        throw;
+                    }
                 }
-            }
 
             return modelUsers;
         }

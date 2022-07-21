@@ -15,7 +15,7 @@ namespace TabellaUsers.Repository
 
         public async Task<ModelAzienda> CreateAziendaAsync(ModelAzienda azienda)
         {
-            if (_context.Azienda == null)
+            if (azienda.NameAzienda==null)
             {
                 return null;
             }
@@ -32,14 +32,8 @@ namespace TabellaUsers.Repository
             {
                 return null;
             }
-            var modelAzienda = await _context.Azienda.FindAsync(id);
-            var modelUser = await _context.Users.Where(u => u.Azienda_Id == id).ToListAsync();
-            foreach(var user in modelUser)
-            {
-                user.Azienda_Id = null;
-                _context.Users.Update(user);
-                await _context.SaveChangesAsync();
-            }
+            var modelAzienda = await _context.Azienda.Where(u => u.IdAzienda == id).FirstOrDefaultAsync();
+ 
             if (modelAzienda == null)
             {
                 return null;
@@ -74,11 +68,6 @@ namespace TabellaUsers.Repository
             }
             var modelAzienda = await _context.Azienda.Include(a => a.Users).ThenInclude(c => c.Contracts).Where(c => c.IdAzienda == id).ToListAsync();
 
-            if (modelAzienda == null)
-            {
-                return null;
-            }
-
             return modelAzienda;
         }
 
@@ -95,6 +84,7 @@ namespace TabellaUsers.Repository
 
             try
             {
+                _context.Azienda.Update(modelAzienda);
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
